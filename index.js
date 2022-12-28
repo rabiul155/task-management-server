@@ -22,15 +22,58 @@ async function run() {
 
         app.get('/myTask', async (req, res) => {
             const email = req.query.email;
-            console.log(email);
+
             const query = { email: email }
             const result = await taskCollection.find(query).toArray();
             res.send(result);
         })
 
+        app.get('/update/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) }
+            const result = await taskCollection.findOne(query);
+            res.send(result);
+
+        })
+
+        app.put('/updateDetails/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) }
+            const details = req.body.details;
+            console.log(details)
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    details: details
+                }
+            }
+            const result = await taskCollection.updateOne(query, updatedDoc, options)
+            res.send(result)
+        })
+
+
+        app.put('/addComment/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: ObjectId(id) }
+            const comment = req.body.comment;
+            console.log(comment)
+
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    comment: comment
+                }
+            }
+            const result = await taskCollection.updateOne(query, updatedDoc, options)
+            res.send(result)
+        })
+
         app.get('/completedTask', async (req, res) => {
             const email = req.query.email;
-            console.log(email);
+
             const query = { email: email }
             const result = await taskCollection.find(query).toArray();
             const completed = result.filter(res => res.status == 'complete')
@@ -40,7 +83,7 @@ async function run() {
 
         app.delete('/deleteTask/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
+
             const query = { _id: ObjectId(id) }
             const result = await taskCollection.deleteOne(query);
             res.send(result);
@@ -60,6 +103,8 @@ async function run() {
             const result = await taskCollection.updateOne(query, updatedDoc, options)
             res.send(result)
         })
+
+
 
         app.post('/addTask', async (req, res) => {
             const task = req.body;
