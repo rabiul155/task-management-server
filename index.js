@@ -19,6 +19,7 @@ async function run() {
     try {
 
         const taskCollection = client.db('task-management').collection('all-task')
+        const commentCollection = client.db('task-management').collection('all-comment')
 
         app.get('/myTask', async (req, res) => {
             const email = req.query.email;
@@ -27,6 +28,23 @@ async function run() {
             const result = await taskCollection.find(query).toArray();
             res.send(result);
         })
+
+        app.get('/myComment', async (req, res) => {
+            const id = req.query.id;
+            console.log(id)
+
+            const query = { taskId: id }
+            const result = await commentCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        app.post('/addComment', async (req, res) => {
+            const comment = req.body;
+            console.log(comment);
+            const result = await commentCollection.insertOne(comment);
+            res.send(result)
+        })
+
 
         app.get('/update/:id', async (req, res) => {
             const id = req.params.id;
